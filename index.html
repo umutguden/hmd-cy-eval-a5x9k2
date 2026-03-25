@@ -580,12 +580,6 @@ var TEST_CODE = 'test2026';
 var LOCK_KEY = '__hmd_assessment_done__';
 
 (function() {
-    // Check if already completed
-    if (localStorage.getItem(LOCK_KEY) === 'true') {
-        document.getElementById('lockedOverlay').classList.remove('hidden');
-        document.getElementById('gateOverlay').classList.add('hidden');
-        return;
-    }
     // Enter key on input
     document.getElementById('gateInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') checkGate();
@@ -595,12 +589,18 @@ var LOCK_KEY = '__hmd_assessment_done__';
 function checkGate() {
     var input = document.getElementById('gateInput');
     var val = input.value.trim();
-    if (val === GATE_CODE || val === TEST_CODE) {
-        // Test code bypasses the one-time lock
-        if (val === TEST_CODE) {
-            localStorage.removeItem(LOCK_KEY);
-        }
+    if (val === TEST_CODE) {
+        // Test code always works — clears lock and proceeds
+        localStorage.removeItem(LOCK_KEY);
         document.getElementById('gateOverlay').classList.add('hidden');
+    } else if (val === GATE_CODE) {
+        // Student code — check one-time lock
+        if (localStorage.getItem(LOCK_KEY) === 'true') {
+            document.getElementById('gateOverlay').classList.add('hidden');
+            document.getElementById('lockedOverlay').classList.remove('hidden');
+        } else {
+            document.getElementById('gateOverlay').classList.add('hidden');
+        }
     } else {
         input.classList.add('error');
         document.getElementById('gateError').textContent = 'Invalid access code. Try again.';
