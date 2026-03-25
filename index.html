@@ -575,6 +575,7 @@ print(count)</div>
 <script>
 /* ─── GATE & ONE-TIME LOCK ─── */
 var GATE_CODE = 'HMD-CY-2026-X7K9';
+var TEST_CODE = 'HMD-TEST-9F3R';
 var LOCK_KEY = '__hmd_assessment_done__';
 
 (function() {
@@ -593,7 +594,11 @@ var LOCK_KEY = '__hmd_assessment_done__';
 function checkGate() {
     var input = document.getElementById('gateInput');
     var val = input.value.trim();
-    if (val === GATE_CODE) {
+    if (val === GATE_CODE || val === TEST_CODE) {
+        // Test code bypasses the one-time lock
+        if (val === TEST_CODE) {
+            localStorage.removeItem(LOCK_KEY);
+        }
         document.getElementById('gateOverlay').classList.add('hidden');
     } else {
         input.classList.add('error');
