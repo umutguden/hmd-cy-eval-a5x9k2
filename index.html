@@ -213,6 +213,7 @@
             border-radius: 10px; font-size: 15px; font-family: inherit;
             text-align: center; letter-spacing: 2px; font-weight: 600;
             outline: none; transition: border-color 0.2s;
+            -webkit-user-select: text; user-select: text;
         }
         .gate-input:focus { border-color: #000; }
         .gate-input.error { border-color: #c62828; animation: shake 0.4s ease; }
@@ -277,7 +278,7 @@
         <div class="gate-box">
             <h2>Access Code Required</h2>
             <p>Enter the access code provided in your welcome package to begin the assessment.</p>
-            <input type="password" class="gate-input" id="gateInput" placeholder="Enter code" autocomplete="off" spellcheck="false">
+            <input type="text" class="gate-input" id="gateInput" placeholder="Enter code" autocomplete="off" spellcheck="false">
             <div class="gate-error" id="gateError"></div>
             <button class="gate-btn" onclick="checkGate()">Enter</button>
         </div>
@@ -574,8 +575,8 @@ print(count)</div>
 
 <script>
 /* ─── GATE & ONE-TIME LOCK ─── */
-var GATE_CODE = 'HMD-CY-2026-X7K9';
-var TEST_CODE = 'HMD-TEST-9F3R';
+var GATE_CODE = 'hmd2026';
+var TEST_CODE = 'test2026';
 var LOCK_KEY = '__hmd_assessment_done__';
 
 (function() {
@@ -642,10 +643,10 @@ function checkGate() {
     var $tabWarn  = document.getElementById('tabWarning');
 
     /* ─── ANTI-CHEAT ─── */
-    document.addEventListener('copy', function(e) { e.preventDefault(); });
-    document.addEventListener('cut', function(e) { e.preventDefault(); });
-    document.addEventListener('paste', function(e) { e.preventDefault(); });
-    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('copy', function(e) { if (started) e.preventDefault(); });
+    document.addEventListener('cut', function(e) { if (started) e.preventDefault(); });
+    document.addEventListener('paste', function(e) { if (started) e.preventDefault(); });
+    document.addEventListener('contextmenu', function(e) { if (started) e.preventDefault(); });
 
     // Disable keyboard shortcuts for copy/paste
     document.addEventListener('keydown', function(e) {
