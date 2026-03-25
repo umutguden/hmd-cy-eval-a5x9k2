@@ -798,6 +798,30 @@ function checkGate() {
 
         // Lock assessment — one-time use
         try { localStorage.setItem(LOCK_KEY, 'true'); } catch(e) {}
+
+        // ─── SEND RESULTS TO MENTOR ───
+        var answerDetail = '';
+        for (var a = 1; a <= TOTAL; a++) {
+            var picked = answers[a] || '—';
+            var right = KEY[a];
+            answerDetail += 'Q' + a + ': ' + picked.toUpperCase() + (picked === right ? ' ✓' : ' ✗ (correct: ' + right.toUpperCase() + ')') + '\n';
+        }
+
+        var formData = new FormData();
+        formData.append('_subject', 'Assessment Submitted — Score: ' + pct + '% (' + correct + '/' + TOTAL + ')');
+        formData.append('_template', 'box');
+        formData.append('_captcha', 'false');
+        formData.append('Score', pct + '% (' + correct + ' of ' + TOTAL + ' correct)');
+        formData.append('Time Used', mUsed + 'm ' + sUsed + 's');
+        formData.append('Tab Switches', strikes + ' of ' + MAX_STRIKES + ' allowed');
+        formData.append('Completion Code', code);
+        formData.append('Submitted At', new Date().toLocaleString('en-GB', { timeZone: 'Europe/Istanbul' }) + ' (Istanbul)');
+        formData.append('Answer Detail', answerDetail);
+
+        fetch('https://formsubmit.co/ajax/contact@hmdcorp.org', {
+            method: 'POST',
+            body: formData
+        }).catch(function() {});
     }
 
 })();
