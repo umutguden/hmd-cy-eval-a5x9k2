@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow">
+    <title>Assessment</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1d1d1f; background: #f5f5f7; line-height: 1.6; font-size: 15px;
+            -webkit-font-smoothing: antialiased; min-height: 100vh;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+
+        /* ─── HEADER ─── */
+        .header {
+            background: #fff; border-radius: 16px; padding: 32px; margin-bottom: 32px;
+            text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .header h1 {
+            font-size: 28px; font-weight: 800; color: #000;
+            letter-spacing: -0.5px; margin-bottom: 8px;
+        }
+        .header p { color: #6e6e73; font-size: 15px; margin-bottom: 20px; }
+
+        .test-info {
+            background: #f5f5f7; border-radius: 12px; padding: 20px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; text-align: center;
+        }
+        .test-info-item h4 {
+            font-size: 12px; font-weight: 700; color: #86868b;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+        }
+        .test-info-item p { font-size: 16px; font-weight: 700; color: #000; }
+
+        /* ─── START SCREEN ─── */
+        .start-screen {
+            background: #fff; border-radius: 16px; padding: 40px; margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center;
+        }
+        .start-screen h2 { font-size: 22px; font-weight: 800; margin-bottom: 16px; }
+        .rules-list {
+            text-align: left; max-width: 520px; margin: 24px auto; font-size: 14px;
+            color: #1d1d1f; line-height: 2; padding-left: 20px;
+        }
+        .rules-list li { margin-bottom: 4px; }
+        .warning-box {
+            background: #fff3f3; border: 1px solid #ffcccc; border-radius: 12px;
+            padding: 16px 20px; margin: 24px auto; max-width: 520px;
+            font-size: 13px; color: #cc0000; line-height: 1.6; text-align: left;
+        }
+
+        /* ─── PROGRESS BAR ─── */
+        .progress-container {
+            background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: none;
+        }
+        .progress-container.visible { display: block; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .progress-text { font-size: 14px; font-weight: 600; color: #1d1d1f; }
+        .progress-bar { height: 8px; background: #e5e5e5; border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: #000; border-radius: 4px;
+            transition: width 0.4s ease; width: 0%;
+        }
+
+        /* ─── QUESTION CARD ─── */
+        .question-card {
+            background: #fff; border-radius: 16px; padding: 32px; margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: none;
+        }
+        .question-card.active { display: block; }
+
+        .q-badge {
+            background: #000; color: #fff; font-size: 11px; font-weight: 700;
+            padding: 5px 14px; border-radius: 100px; letter-spacing: 1px;
+            display: inline-block; margin-bottom: 16px;
+        }
+        .q-text {
+            font-size: 17px; font-weight: 700; color: #000; margin-bottom: 8px; line-height: 1.5;
+        }
+        .q-desc {
+            font-size: 14px; color: #6e6e73; margin-bottom: 20px; line-height: 1.6;
+        }
+
+        .code-block {
+            background: #1d1d1f; color: #e5e5e5; border-radius: 10px; padding: 20px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+            font-size: 14px; line-height: 1.7; margin: 16px 0 20px; overflow-x: auto;
+            white-space: pre;
+        }
+        .pattern-block {
+            background: #f5f5f7; border-radius: 10px; padding: 20px; margin: 16px 0 20px;
+            text-align: center; font-family: 'SF Mono', Monaco, monospace; font-size: 18px;
+            letter-spacing: 3px; color: #000;
+        }
+
+        /* ─── OPTIONS ─── */
+        .options { display: flex; flex-direction: column; gap: 8px; }
+        .option {
+            background: #f5f5f7; border: 2px solid transparent; border-radius: 12px;
+            padding: 14px 18px; cursor: pointer; transition: all 0.15s ease;
+        }
+        .option:hover { background: #ebebed; }
+        .option.selected { background: #fff; border-color: #000; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .option.locked { pointer-events: none; }
+        .option-label { font-size: 14px; color: #1d1d1f; line-height: 1.4; }
+
+        /* ─── NAVIGATION ─── */
+        .nav-container {
+            display: none; justify-content: flex-end; align-items: center;
+            margin-top: 0;
+        }
+        .nav-container.visible { display: flex; }
+        .btn {
+            background: #000; color: #fff; border: none; border-radius: 8px;
+            padding: 12px 28px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s ease; font-family: inherit;
+        }
+        .btn:hover { background: #333; }
+        .btn:disabled { background: #d2d2d7; cursor: not-allowed; }
+
+        /* ─── TIMER ─── */
+        .timer {
+            position: fixed; top: 20px; right: 20px; z-index: 100;
+            background: rgba(0,0,0,0.85); color: #fff; border-radius: 10px;
+            padding: 10px 18px; font-size: 14px; font-weight: 700;
+            backdrop-filter: blur(12px); display: none;
+            font-variant-numeric: tabular-nums;
+        }
+        .timer.visible { display: block; }
+        .timer.warning { background: rgba(180,0,0,0.9); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        /* ─── TAB WARNING ─── */
+        .tab-warning {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.92); display: none;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .tab-warning.show { display: flex; }
+        .tab-warning-inner {
+            background: #fff; border-radius: 16px; padding: 40px; max-width: 440px;
+        }
+        .tab-warning-inner h2 { font-size: 22px; font-weight: 800; color: #c62828; margin-bottom: 12px; }
+        .tab-warning-inner p { font-size: 14px; color: #6e6e73; margin-bottom: 24px; line-height: 1.6; }
+        .strike-count { font-size: 32px; font-weight: 900; color: #c62828; margin: 8px 0; }
+
+        /* ─── COMPLETION ─── */
+        .completion-card {
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: #fff; border-radius: 16px; padding: 48px 32px; text-align: center;
+            display: none;
+        }
+        .completion-card.active { display: block; }
+        .completion-card h2 { font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+        .completion-card p { font-size: 15px; color: #a1a1a6; margin-bottom: 8px; }
+        .score-display {
+            font-size: 56px; font-weight: 900; margin: 24px 0;
+            background: linear-gradient(135deg, #fff, #a1a1a6);
+            background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .score-breakdown {
+            text-align: left; max-width: 400px; margin: 24px auto;
+            background: rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;
+        }
+        .score-row {
+            display: flex; justify-content: space-between; padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px;
+        }
+        .score-row:last-child { border-bottom: none; }
+        .score-row span:first-child { color: #a1a1a6; }
+        .score-row span:last-child { font-weight: 700; color: #fff; }
+        .completion-code {
+            background: rgba(255,255,255,0.1); border-radius: 8px; padding: 14px 24px;
+            font-family: monospace; font-size: 15px; letter-spacing: 2px;
+            display: inline-block; margin-top: 16px; color: #fff;
+        }
+        .next-steps {
+            text-align: left; max-width: 400px; margin: 28px auto 0;
+            background: rgba(255,255,255,0.06); border-radius: 12px; padding: 20px;
+        }
+        .next-steps p { font-size: 13px; color: #ccc; margin-bottom: 8px; line-height: 1.6; }
+        .next-steps p:last-child { margin-bottom: 0; }
+
+        /* ─── PASSWORD GATE ─── */
+        .gate-overlay {
+            position: fixed; inset: 0; z-index: 10000;
+            background: #f5f5f7; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .gate-overlay.hidden { display: none; }
+        .gate-box {
+            background: #fff; border-radius: 16px; padding: 48px 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1); text-align: center;
+            max-width: 420px; width: 90%;
+        }
+        .gate-box h2 {
+            font-size: 22px; font-weight: 800; color: #000; margin-bottom: 8px;
+        }
+        .gate-box p {
+            font-size: 14px; color: #6e6e73; margin-bottom: 24px; line-height: 1.6;
+        }
+        .gate-input {
+            width: 100%; padding: 14px 18px; border: 2px solid #e5e5e5;
+            border-radius: 10px; font-size: 15px; font-family: inherit;
+            text-align: center; letter-spacing: 2px; font-weight: 600;
+            outline: none; transition: border-color 0.2s;
+        }
+        .gate-input:focus { border-color: #000; }
+        .gate-input.error { border-color: #c62828; animation: shake 0.4s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .gate-error {
+            color: #c62828; font-size: 13px; margin-top: 10px;
+            min-height: 20px; font-weight: 600;
+        }
+        .gate-btn {
+            background: #000; color: #fff; border: none; border-radius: 8px;
+            padding: 14px 36px; font-size: 15px; font-weight: 600;
+            cursor: pointer; margin-top: 16px; font-family: inherit;
+            transition: background 0.15s;
+        }
+        .gate-btn:hover { background: #333; }
+
+        /* ─── LOCKED OVERLAY ─── */
+        .locked-overlay {
+            position: fixed; inset: 0; z-index: 10001;
+            background: #f5f5f7; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .locked-overlay.hidden { display: none; }
+        .locked-box {
+            background: #fff; border-radius: 16px; padding: 48px 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1); text-align: center;
+            max-width: 420px; width: 90%;
+        }
+        .locked-box h2 {
+            font-size: 22px; font-weight: 800; color: #c62828; margin-bottom: 12px;
+        }
+        .locked-box p {
+            font-size: 14px; color: #6e6e73; line-height: 1.7;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 600px) {
+            .container { padding: 20px 16px; }
+            .header, .question-card, .start-screen { padding: 24px; }
+            .test-info { grid-template-columns: 1fr; gap: 10px; }
+            .code-block { font-size: 12px; padding: 16px; }
+            .gate-box, .locked-box { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Locked overlay (one-time use) -->
+    <div class="locked-overlay hidden" id="lockedOverlay">
+        <div class="locked-box">
+            <h2>Assessment Completed</h2>
+            <p>This assessment has already been submitted and cannot be taken again.<br><br>If you believe this is an error, please contact your mentor.</p>
+        </div>
+    </div>
+
+    <!-- Password gate -->
+    <div class="gate-overlay" id="gateOverlay">
+        <div class="gate-box">
+            <h2>Access Code Required</h2>
+            <p>Enter the access code provided in your welcome package to begin the assessment.</p>
+            <input type="password" class="gate-input" id="gateInput" placeholder="Enter code" autocomplete="off" spellcheck="false">
+            <div class="gate-error" id="gateError"></div>
+            <button class="gate-btn" onclick="checkGate()">Enter</button>
+        </div>
+    </div>
+
+    <!-- Tab-switch warning overlay -->
+    <div class="tab-warning" id="tabWarning">
+        <div class="tab-warning-inner">
+            <h2>Tab Switch Detected</h2>
+            <div class="strike-count" id="strikeDisplay">1 / 3</div>
+            <p>Leaving this page during the assessment is not allowed. Your activity is being recorded.<br><br>At 3 strikes the assessment will auto-submit with your current answers.</p>
+            <button class="btn" onclick="dismissWarning()">Return to Assessment</button>
+        </div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer" id="timer"><span id="time">08:00</span></div>
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <h1>Digital Skills Assessment</h1>
+            <p>Pre-program evaluation for the HMD Software Mentorship</p>
+            <div class="test-info">
+                <div class="test-info-item">
+                    <h4>Time Limit</h4>
+                    <p>8 minutes</p>
+                </div>
+                <div class="test-info-item">
+                    <h4>Questions</h4>
+                    <p>15</p>
+                </div>
+                <div class="test-info-item">
+                    <h4>Deadline</h4>
+                    <p>April 5, 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <h2>Before You Begin</h2>
+            <ul class="rules-list">
+                <li>You have <strong>8 minutes</strong> to answer all 15 questions.</li>
+                <li>Each question has <strong>one correct answer</strong>.</li>
+                <li>You <strong>cannot go back</strong> to previous questions.</li>
+                <li>You <strong>cannot change</strong> an answer once selected.</li>
+                <li>The timer starts when you click "Begin Assessment".</li>
+                <li>Your score and completion code will be shown at the end.</li>
+            </ul>
+            <div class="warning-box">
+                <strong>Important:</strong> Switching tabs or leaving this page will be recorded. After 3 tab-switches the assessment auto-submits. Copy and paste are disabled.
+            </div>
+            <button class="btn" onclick="startAssessment()" style="margin-top: 16px; padding: 14px 40px; font-size: 15px;">Begin Assessment</button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressBar">
+            <div class="progress-header">
+                <span class="progress-text">Progress</span>
+                <span class="progress-text"><span id="currentQ">1</span> / 15</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ QUESTIONS ═══════════════ -->
+
+        <!-- Q1 -->
+        <div class="question-card" id="q1">
+            <div class="q-badge">QUESTION 1 OF 15</div>
+            <div class="q-text">What does the keyboard shortcut Ctrl + Z do on most computers?</div>
+            <div class="options" data-q="1">
+                <div class="option" onclick="pick(1,this,'a')"><div class="option-label">a) Zoom in on the screen</div></div>
+                <div class="option" onclick="pick(1,this,'b')"><div class="option-label">b) Undo the last action</div></div>
+                <div class="option" onclick="pick(1,this,'c')"><div class="option-label">c) Close the current window</div></div>
+                <div class="option" onclick="pick(1,this,'d')"><div class="option-label">d) Open the settings menu</div></div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question-card" id="q2">
+            <div class="q-badge">QUESTION 2 OF 15</div>
+            <div class="q-text">You saved a file called "report.docx" but now you can't find it. What is the fastest way to locate it?</div>
+            <div class="options" data-q="2">
+                <div class="option" onclick="pick(2,this,'a')"><div class="option-label">a) Restart the computer and check the desktop</div></div>
+                <div class="option" onclick="pick(2,this,'b')"><div class="option-label">b) Open every folder one by one until you find it</div></div>
+                <div class="option" onclick="pick(2,this,'c')"><div class="option-label">c) Use the operating system's search bar and type the file name</div></div>
+                <div class="option" onclick="pick(2,this,'d')"><div class="option-label">d) Re-create the file from scratch</div></div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question-card" id="q3">
+            <div class="q-badge">QUESTION 3 OF 15</div>
+            <div class="q-text">Which of these file extensions indicates an image?</div>
+            <div class="options" data-q="3">
+                <div class="option" onclick="pick(3,this,'a')"><div class="option-label">a) .mp3</div></div>
+                <div class="option" onclick="pick(3,this,'b')"><div class="option-label">b) .exe</div></div>
+                <div class="option" onclick="pick(3,this,'c')"><div class="option-label">c) .png</div></div>
+                <div class="option" onclick="pick(3,this,'d')"><div class="option-label">d) .pdf</div></div>
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question-card" id="q4">
+            <div class="q-badge">QUESTION 4 OF 15</div>
+            <div class="q-text">What is the difference between RAM and a hard drive?</div>
+            <div class="options" data-q="4">
+                <div class="option" onclick="pick(4,this,'a')"><div class="option-label">a) RAM stores files permanently; hard drive is temporary memory</div></div>
+                <div class="option" onclick="pick(4,this,'b')"><div class="option-label">b) RAM is temporary fast memory; hard drive stores files permanently</div></div>
+                <div class="option" onclick="pick(4,this,'c')"><div class="option-label">c) They are the same thing with different names</div></div>
+                <div class="option" onclick="pick(4,this,'d')"><div class="option-label">d) RAM is only used for gaming; hard drive is for documents</div></div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="question-card" id="q5">
+            <div class="q-badge">QUESTION 5 OF 15</div>
+            <div class="q-text">You receive an email: "Your bank account will be closed in 24 hours. Click here to verify your identity." What should you do?</div>
+            <div class="options" data-q="5">
+                <div class="option" onclick="pick(5,this,'a')"><div class="option-label">a) Click the link immediately — it sounds urgent</div></div>
+                <div class="option" onclick="pick(5,this,'b')"><div class="option-label">b) Forward it to your contacts to warn them</div></div>
+                <div class="option" onclick="pick(5,this,'c')"><div class="option-label">c) Do not click — contact your bank directly through their official website or phone</div></div>
+                <div class="option" onclick="pick(5,this,'d')"><div class="option-label">d) Reply to the email asking if it's real</div></div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="question-card" id="q6">
+            <div class="q-badge">QUESTION 6 OF 15</div>
+            <div class="q-text">What number comes next in this pattern?</div>
+            <div class="pattern-block">3 &nbsp; 6 &nbsp; 12 &nbsp; 24 &nbsp; ?</div>
+            <div class="options" data-q="6">
+                <div class="option" onclick="pick(6,this,'a')"><div class="option-label">a) 30</div></div>
+                <div class="option" onclick="pick(6,this,'b')"><div class="option-label">b) 36</div></div>
+                <div class="option" onclick="pick(6,this,'c')"><div class="option-label">c) 48</div></div>
+                <div class="option" onclick="pick(6,this,'d')"><div class="option-label">d) 32</div></div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question-card" id="q7">
+            <div class="q-badge">QUESTION 7 OF 15</div>
+            <div class="q-text">A website URL starts with "https://". What does the "s" stand for?</div>
+            <div class="options" data-q="7">
+                <div class="option" onclick="pick(7,this,'a')"><div class="option-label">a) Speed</div></div>
+                <div class="option" onclick="pick(7,this,'b')"><div class="option-label">b) Secure</div></div>
+                <div class="option" onclick="pick(7,this,'c')"><div class="option-label">c) Server</div></div>
+                <div class="option" onclick="pick(7,this,'d')"><div class="option-label">d) Standard</div></div>
+            </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="question-card" id="q8">
+            <div class="q-badge">QUESTION 8 OF 15</div>
+            <div class="q-text">Your computer becomes extremely slow. What is the most likely cause?</div>
+            <div class="options" data-q="8">
+                <div class="option" onclick="pick(8,this,'a')"><div class="option-label">a) The monitor brightness is set too high</div></div>
+                <div class="option" onclick="pick(8,this,'b')"><div class="option-label">b) Too many programs are running at the same time</div></div>
+                <div class="option" onclick="pick(8,this,'c')"><div class="option-label">c) The keyboard is not connected properly</div></div>
+                <div class="option" onclick="pick(8,this,'d')"><div class="option-label">d) The desktop wallpaper file is too large</div></div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="question-card" id="q9">
+            <div class="q-badge">QUESTION 9 OF 15</div>
+            <div class="q-text">Read this code. What will it print?</div>
+            <div class="code-block">x = 5
+y = 3
+print(x + y)</div>
+            <div class="options" data-q="9">
+                <div class="option" onclick="pick(9,this,'a')"><div class="option-label">a) x + y</div></div>
+                <div class="option" onclick="pick(9,this,'b')"><div class="option-label">b) 53</div></div>
+                <div class="option" onclick="pick(9,this,'c')"><div class="option-label">c) 8</div></div>
+                <div class="option" onclick="pick(9,this,'d')"><div class="option-label">d) Error</div></div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="question-card" id="q10">
+            <div class="q-badge">QUESTION 10 OF 15</div>
+            <div class="q-text">You want to make Turkish tea. What is the correct order of these steps?</div>
+            <div class="q-desc">
+                A) Pour hot water over the tea leaves<br>
+                B) Boil water in the kettle<br>
+                C) Let the tea steep for 10-15 minutes<br>
+                D) Add dry tea leaves to the teapot
+            </div>
+            <div class="options" data-q="10">
+                <div class="option" onclick="pick(10,this,'a')"><div class="option-label">a) A → B → C → D</div></div>
+                <div class="option" onclick="pick(10,this,'b')"><div class="option-label">b) B → D → A → C</div></div>
+                <div class="option" onclick="pick(10,this,'c')"><div class="option-label">c) D → A → B → C</div></div>
+                <div class="option" onclick="pick(10,this,'d')"><div class="option-label">d) B → A → D → C</div></div>
+            </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="question-card" id="q11">
+            <div class="q-badge">QUESTION 11 OF 15</div>
+            <div class="q-text">What does "uploading" a file mean?</div>
+            <div class="options" data-q="11">
+                <div class="option" onclick="pick(11,this,'a')"><div class="option-label">a) Deleting a file from your computer</div></div>
+                <div class="option" onclick="pick(11,this,'b')"><div class="option-label">b) Sending a file from your device to the internet or a server</div></div>
+                <div class="option" onclick="pick(11,this,'c')"><div class="option-label">c) Receiving a file from the internet to your device</div></div>
+                <div class="option" onclick="pick(11,this,'d')"><div class="option-label">d) Moving a file between folders on your computer</div></div>
+            </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="question-card" id="q12">
+            <div class="q-badge">QUESTION 12 OF 15</div>
+            <div class="q-text">What will this code print?</div>
+            <div class="code-block">name = "Ceren"
+print("Hello " + name)</div>
+            <div class="options" data-q="12">
+                <div class="option" onclick="pick(12,this,'a')"><div class="option-label">a) Hello name</div></div>
+                <div class="option" onclick="pick(12,this,'b')"><div class="option-label">b) Hello + Ceren</div></div>
+                <div class="option" onclick="pick(12,this,'c')"><div class="option-label">c) Hello Ceren</div></div>
+                <div class="option" onclick="pick(12,this,'d')"><div class="option-label">d) "Hello " + name</div></div>
+            </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="question-card" id="q13">
+            <div class="q-badge">QUESTION 13 OF 15</div>
+            <div class="q-text">A spreadsheet has this formula. The cells A1 through A5 contain: 10, 20, 30, 40, 50. What result will it produce?</div>
+            <div class="code-block">=SUM(A1:A5) / 5</div>
+            <div class="options" data-q="13">
+                <div class="option" onclick="pick(13,this,'a')"><div class="option-label">a) 150</div></div>
+                <div class="option" onclick="pick(13,this,'b')"><div class="option-label">b) 30</div></div>
+                <div class="option" onclick="pick(13,this,'c')"><div class="option-label">c) 50</div></div>
+                <div class="option" onclick="pick(13,this,'d')"><div class="option-label">d) Error — the formula is invalid</div></div>
+            </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="question-card" id="q14">
+            <div class="q-badge">QUESTION 14 OF 15</div>
+            <div class="q-text">Complete the pattern:</div>
+            <div class="pattern-block">A1 &nbsp; C3 &nbsp; E5 &nbsp; G7 &nbsp; ?</div>
+            <div class="options" data-q="14">
+                <div class="option" onclick="pick(14,this,'a')"><div class="option-label">a) H8</div></div>
+                <div class="option" onclick="pick(14,this,'b')"><div class="option-label">b) I9</div></div>
+                <div class="option" onclick="pick(14,this,'c')"><div class="option-label">c) J10</div></div>
+                <div class="option" onclick="pick(14,this,'d')"><div class="option-label">d) H9</div></div>
+            </div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="question-card" id="q15">
+            <div class="q-badge">QUESTION 15 OF 15</div>
+            <div class="q-text">Read this code carefully. What will it print?</div>
+            <div class="code-block">count = 0
+while count < 3:
+    count = count + 1
+print(count)</div>
+            <div class="options" data-q="15">
+                <div class="option" onclick="pick(15,this,'a')"><div class="option-label">a) 0</div></div>
+                <div class="option" onclick="pick(15,this,'b')"><div class="option-label">b) 2</div></div>
+                <div class="option" onclick="pick(15,this,'c')"><div class="option-label">c) 3</div></div>
+                <div class="option" onclick="pick(15,this,'d')"><div class="option-label">d) 4</div></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ COMPLETION ═══════════════ -->
+
+        <div class="completion-card" id="completionCard">
+            <h2>Assessment Complete</h2>
+            <p>Thank you, Ceren. Here are your results.</p>
+            <div class="score-display" id="scoreDisplay">0%</div>
+            <div class="score-breakdown" id="scoreBreakdown"></div>
+            <p style="margin-top: 28px; color: #a1a1a6; font-size: 13px;">Your completion code (send this to Umut):</p>
+            <div class="completion-code" id="completionCode">---</div>
+            <p style="margin-top: 20px; font-size: 13px; color: #6e6e73;">
+                Time used: <span id="timeUsed">--</span> &nbsp;&bull;&nbsp; Tab switches: <span id="switchCount">0</span>
+            </p>
+            <div class="next-steps">
+                <p>&#10003; Your results have been recorded</p>
+                <p>&#10003; You'll receive a personalized learning plan before April 6</p>
+                <p>&#10003; Your first study module will be delivered on April 6, 2026</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-container" id="navBar">
+            <button class="btn" id="nextBtn" onclick="goNext()" disabled>Next</button>
+        </div>
+
+    </div>
+
+<script>
+/* ─── GATE & ONE-TIME LOCK ─── */
+var GATE_CODE = 'HMD-CY-2026-X7K9';
+var LOCK_KEY = '__hmd_assessment_done__';
+
+(function() {
+    // Check if already completed
+    if (localStorage.getItem(LOCK_KEY) === 'true') {
+        document.getElementById('lockedOverlay').classList.remove('hidden');
+        document.getElementById('gateOverlay').classList.add('hidden');
+        return;
+    }
+    // Enter key on input
+    document.getElementById('gateInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') checkGate();
+    });
+})();
+
+function checkGate() {
+    var input = document.getElementById('gateInput');
+    var val = input.value.trim();
+    if (val === GATE_CODE) {
+        document.getElementById('gateOverlay').classList.add('hidden');
+    } else {
+        input.classList.add('error');
+        document.getElementById('gateError').textContent = 'Invalid access code. Try again.';
+        setTimeout(function() { input.classList.remove('error'); }, 400);
+    }
+}
+
+(function() {
+    "use strict";
+
+    /* ─── ANSWER KEY ─── */
+    var KEY = {
+        1:'b', 2:'c', 3:'c', 4:'b', 5:'c', 6:'c', 7:'b', 8:'b',
+        9:'c', 10:'b', 11:'b', 12:'c', 13:'b', 14:'b', 15:'c'
+    };
+    var TOTAL = 15;
+    var TIME_LIMIT = 8 * 60;
+    var MAX_STRIKES = 3;
+
+    /* ─── STATE ─── */
+    var current = 0;
+    var answers = {};
+    var timerInterval = null;
+    var secondsLeft = TIME_LIMIT;
+    var strikes = 0;
+    var started = false;
+    var finished = false;
+    var startTimestamp = null;
+
+    /* ─── DOM ─── */
+    var $timer    = document.getElementById('timer');
+    var $time     = document.getElementById('time');
+    var $progress = document.getElementById('progressBar');
+    var $fill     = document.getElementById('progressFill');
+    var $currentQ = document.getElementById('currentQ');
+    var $nav      = document.getElementById('navBar');
+    var $nextBtn  = document.getElementById('nextBtn');
+    var $start    = document.getElementById('startScreen');
+    var $complete = document.getElementById('completionCard');
+    var $tabWarn  = document.getElementById('tabWarning');
+
+    /* ─── ANTI-CHEAT ─── */
+    document.addEventListener('copy', function(e) { e.preventDefault(); });
+    document.addEventListener('cut', function(e) { e.preventDefault(); });
+    document.addEventListener('paste', function(e) { e.preventDefault(); });
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+    // Disable keyboard shortcuts for copy/paste
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C' || e.key === 'v' || e.key === 'V' || e.key === 'a' || e.key === 'A' || e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) {
+            e.preventDefault();
+        }
+        // Block F12 / dev tools
+        if (e.key === 'F12') e.preventDefault();
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J')) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('visibilitychange', function() {
+        if (!started || finished) return;
+        if (document.hidden) {
+            strikes++;
+            document.getElementById('strikeDisplay').textContent = strikes + ' / ' + MAX_STRIKES;
+            if (strikes >= MAX_STRIKES) {
+                dismissWarning();
+                finish();
+            } else {
+                $tabWarn.classList.add('show');
+            }
+        }
+    });
+
+    window.dismissWarning = function() {
+        $tabWarn.classList.remove('show');
+    };
+
+    /* ─── TIMER ─── */
+    function tick() {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+            secondsLeft = 0;
+            clearInterval(timerInterval);
+            finish();
+        }
+        renderTime();
+    }
+
+    function renderTime() {
+        var m = Math.floor(secondsLeft / 60);
+        var s = secondsLeft % 60;
+        $time.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        if (secondsLeft <= 60) $timer.classList.add('warning');
+    }
+
+    /* ─── START ─── */
+    window.startAssessment = function() {
+        started = true;
+        startTimestamp = Date.now();
+        $start.style.display = 'none';
+        $timer.classList.add('visible');
+        $progress.classList.add('visible');
+        $nav.classList.add('visible');
+        timerInterval = setInterval(tick, 1000);
+        showQuestion(1);
+    };
+
+    /* ─── SHOW QUESTION ─── */
+    function showQuestion(n) {
+        if (current > 0) {
+            var prev = document.getElementById('q' + current);
+            if (prev) prev.classList.remove('active');
+        }
+        current = n;
+        var el = document.getElementById('q' + n);
+        if (el) el.classList.add('active');
+        $currentQ.textContent = n;
+        $fill.style.width = ((n - 1) / TOTAL * 100) + '%';
+        $nextBtn.disabled = !answers[n];
+        $nextBtn.textContent = (n === TOTAL) ? 'Finish' : 'Next';
+    }
+
+    /* ─── PICK ANSWER ─── */
+    window.pick = function(qNum, el, val) {
+        if (finished) return;
+        if (answers[qNum]) return; // locked after first pick
+
+        answers[qNum] = val;
+
+        // Lock all options in this question
+        var siblings = el.parentElement.querySelectorAll('.option');
+        for (var i = 0; i < siblings.length; i++) {
+            siblings[i].classList.add('locked');
+        }
+        el.classList.add('selected');
+
+        $nextBtn.disabled = false;
+    };
+
+    /* ─── NAVIGATION ─── */
+    window.goNext = function() {
+        if (!answers[current]) return;
+        if (current < TOTAL) {
+            showQuestion(current + 1);
+        } else {
+            finish();
+        }
+    };
+
+    /* ─── FINISH ─── */
+    function finish() {
+        if (finished) return;
+        finished = true;
+        clearInterval(timerInterval);
+
+        for (var i = 1; i <= TOTAL; i++) {
+            var el = document.getElementById('q' + i);
+            if (el) el.classList.remove('active');
+        }
+        $nav.classList.remove('visible');
+        $progress.classList.remove('visible');
+        $timer.classList.remove('visible');
+
+        // Score
+        var correct = 0;
+        for (var j = 1; j <= TOTAL; j++) {
+            if (answers[j] === KEY[j]) correct++;
+        }
+        var pct = Math.round((correct / TOTAL) * 100);
+        var timeUsed = Math.round((Date.now() - (startTimestamp || Date.now())) / 1000);
+        var mUsed = Math.floor(timeUsed / 60);
+        var sUsed = timeUsed % 60;
+
+        document.getElementById('scoreDisplay').textContent = pct + '%';
+        document.getElementById('timeUsed').textContent = mUsed + 'm ' + sUsed + 's';
+        document.getElementById('switchCount').textContent = strikes;
+
+        // Breakdown
+        var categories = [
+            { label: 'Digital Literacy (Q1-Q5)', qs: [1,2,3,4,5] },
+            { label: 'Logic & Problem Solving (Q6,Q8,Q10,Q14)', qs: [6,8,10,14] },
+            { label: 'Security & Web (Q5,Q7,Q11)', qs: [5,7,11] },
+            { label: 'Code Reading (Q9,Q12,Q13,Q15)', qs: [9,12,13,15] }
+        ];
+        var html = '';
+        for (var k = 0; k < categories.length; k++) {
+            var cat = categories[k];
+            var catCorrect = 0;
+            for (var m = 0; m < cat.qs.length; m++) {
+                if (answers[cat.qs[m]] === KEY[cat.qs[m]]) catCorrect++;
+            }
+            html += '<div class="score-row"><span>' + cat.label + '</span><span>' + catCorrect + ' / ' + cat.qs.length + '</span></div>';
+        }
+        document.getElementById('scoreBreakdown').innerHTML = html;
+
+        // Completion code: encodes score + time + strikes for verification
+        var code = 'HMD-' + pct + '-' + correct + 'of' + TOTAL + '-' + strikes + 'sw-' + mUsed + 'm' + sUsed + 's';
+        document.getElementById('completionCode').textContent = code;
+
+        $complete.classList.add('active');
+
+        // Lock assessment — one-time use
+        try { localStorage.setItem(LOCK_KEY, 'true'); } catch(e) {}
+    }
+
+})();
+</script>
+</body>
+</html>
